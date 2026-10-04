@@ -1,0 +1,1757 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>College Club Management — Flutter Lab Project</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #1E3A8A;
+      --primary-accent: #2563EB;
+      --cyan: #0891B2;
+      --background: #F8FAFC;
+      --surface: #FFFFFF;
+      --border: #E2E8F0;
+      --text-primary: #0F172A;
+      --text-secondary: #475569;
+      --text-hint: #94A3B8;
+      --success: #16A34A;
+      --success-light: #DCFCE7;
+      --warning: #D97706;
+      --warning-light: #FEF3C7;
+      --error: #DC2626;
+      --error-light: #FEE2E2;
+      --radius-sm: 8px;
+      --radius-md: 14px;
+      --radius-lg: 20px;
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+      --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.08), 0 2px 4px -2px rgba(0,0,0,0.04);
+      --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -4px rgba(0,0,0,0.05);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background: #0B1329;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      color: var(--text-primary);
+      overflow-x: hidden;
+    }
+
+    /* Device frame mockup */
+    .app-viewport {
+      width: 100%;
+      max-width: 440px;
+      height: 92vh;
+      max-height: 900px;
+      background: var(--background);
+      border-radius: 36px;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5), 0 0 0 10px #1E293B;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      overflow: hidden;
+    }
+
+    @media (max-width: 500px) {
+      body {
+        background: var(--background);
+      }
+      .app-viewport {
+        max-width: 100%;
+        height: 100vh;
+        max-height: 100vh;
+        border-radius: 0;
+        box-shadow: none;
+      }
+    }
+
+    /* Screen containers */
+    .screen {
+      display: none;
+      flex-direction: column;
+      height: 100%;
+      width: 100%;
+      overflow-y: auto;
+      position: absolute;
+      top: 0;
+      left: 0;
+      background: var(--background);
+      z-index: 10;
+    }
+
+    .screen.active {
+      display: flex;
+    }
+
+    /* ─── SPLASH SCREEN ─── */
+    #screen-splash {
+      background: linear-gradient(135deg, #1E3A8A 0%, #2563EB 55%, #0891B2 100%);
+      color: white;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: 30px;
+      z-index: 50;
+    }
+
+    .splash-logo {
+      width: 100px;
+      height: 100px;
+      background: rgba(255, 255, 255, 0.15);
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-radius: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 52px;
+      margin-bottom: 24px;
+      animation: bounceLogo 1.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    @keyframes bounceLogo {
+      0% { transform: scale(0.3); opacity: 0; }
+      60% { transform: scale(1.1); opacity: 1; }
+      100% { transform: scale(1); }
+    }
+
+    .splash-title {
+      font-size: 32px;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      line-height: 1.1;
+    }
+
+    .splash-subtitle {
+      font-size: 15px;
+      color: rgba(255, 255, 255, 0.75);
+      margin-top: 10px;
+    }
+
+    .splash-loader {
+      margin-top: 60px;
+      width: 32px;
+      height: 32px;
+      border: 3px solid rgba(255, 255, 255, 0.3);
+      border-top-color: white;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .splash-footer {
+      position: absolute;
+      bottom: 24px;
+      font-size: 11px;
+      color: rgba(255, 255, 255, 0.6);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    /* ─── LOGIN SCREEN ─── */
+    #screen-login {
+      padding: 36px 24px;
+      justify-content: center;
+    }
+
+    .login-badge {
+      width: 72px;
+      height: 72px;
+      border-radius: 20px;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-accent) 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 36px;
+      margin: 0 auto 20px;
+      box-shadow: 0 10px 20px rgba(37, 99, 235, 0.3);
+    }
+
+    .login-header h2 {
+      font-size: 26px;
+      font-weight: 800;
+      text-align: center;
+      color: var(--text-primary);
+    }
+
+    .login-header p {
+      font-size: 14px;
+      color: var(--text-secondary);
+      text-align: center;
+      margin-top: 6px;
+      margin-bottom: 28px;
+    }
+
+    .demo-box {
+      background: #EFF6FF;
+      border: 1px dashed #93C5FD;
+      border-radius: var(--radius-md);
+      padding: 14px 16px;
+      margin-bottom: 22px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .demo-box-text {
+      font-size: 12px;
+      color: #1E40AF;
+      line-height: 1.4;
+    }
+
+    .demo-box-btn {
+      background: #DBEAFE;
+      border: none;
+      color: #1D4ED8;
+      font-weight: 700;
+      font-size: 12px;
+      padding: 7px 12px;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .demo-box-btn:hover {
+      background: #BFDBFE;
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      margin-bottom: 6px;
+    }
+
+    .form-control {
+      width: 100%;
+      padding: 13px 16px;
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-md);
+      font-size: 15px;
+      color: var(--text-primary);
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .form-control:focus {
+      border-color: var(--primary-accent);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+    }
+
+    .login-error {
+      color: var(--error);
+      font-size: 13px;
+      margin-bottom: 14px;
+      display: none;
+      background: var(--error-light);
+      padding: 10px 14px;
+      border-radius: var(--radius-sm);
+    }
+
+    .btn-primary {
+      width: 100%;
+      padding: 14px;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-accent) 100%);
+      border: none;
+      color: white;
+      font-size: 16px;
+      font-weight: 700;
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      box-shadow: 0 8px 16px rgba(37, 99, 235, 0.25);
+      transition: transform 0.15s, opacity 0.2s;
+    }
+
+    .btn-primary:active {
+      transform: scale(0.98);
+    }
+
+    /* ─── APP HEADER ─── */
+    .app-header {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 14px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 20;
+    }
+
+    .app-header h1 {
+      font-size: 19px;
+      font-weight: 800;
+      color: var(--text-primary);
+    }
+
+    .avatar-btn {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background: #EFF6FF;
+      color: var(--primary);
+      border: 1.5px solid #BFDBFE;
+      font-weight: 700;
+      font-size: 15px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      position: relative;
+    }
+
+    .avatar-dropdown {
+      position: absolute;
+      right: 16px;
+      top: 60px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-lg);
+      width: 220px;
+      display: none;
+      flex-direction: column;
+      z-index: 40;
+      overflow: hidden;
+    }
+
+    .avatar-dropdown.show {
+      display: flex;
+    }
+
+    .dropdown-header {
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .dropdown-name {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .dropdown-email {
+      font-size: 12px;
+      color: var(--text-hint);
+      margin-top: 2px;
+    }
+
+    .dropdown-item {
+      padding: 12px 16px;
+      font-size: 13.5px;
+      font-weight: 600;
+      color: var(--text-primary);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      transition: background 0.15s;
+    }
+
+    .dropdown-item:hover {
+      background: #F1F5F9;
+    }
+
+    .dropdown-item.logout {
+      color: var(--error);
+      border-top: 1px solid var(--border);
+    }
+
+    /* ─── BOTTOM NAVIGATION ─── */
+    .app-bottom-nav {
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: space-around;
+      padding: 10px 0 14px;
+      position: sticky;
+      bottom: 0;
+      z-index: 20;
+    }
+
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      color: var(--text-hint);
+      font-size: 11px;
+      font-weight: 600;
+      text-decoration: none;
+      cursor: pointer;
+      padding: 4px 12px;
+      border-radius: var(--radius-sm);
+      transition: color 0.15s;
+    }
+
+    .nav-item.active {
+      color: var(--primary);
+    }
+
+    .nav-icon {
+      font-size: 20px;
+      margin-bottom: 3px;
+    }
+
+    /* ─── DASHBOARD CONTENT ─── */
+    .content-body {
+      flex: 1;
+      padding: 18px 20px 24px;
+      overflow-y: auto;
+    }
+
+    .hero-banner {
+      background: linear-gradient(135deg, #1E3A8A 0%, #2563EB 100%);
+      color: white;
+      border-radius: var(--radius-lg);
+      padding: 22px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 22px;
+      box-shadow: 0 10px 20px rgba(37, 99, 235, 0.2);
+    }
+
+    .hero-greeting {
+      font-size: 13px;
+      color: rgba(255, 255, 255, 0.85);
+    }
+
+    .hero-name {
+      font-size: 22px;
+      font-weight: 800;
+      margin: 2px 0 4px;
+    }
+
+    .hero-sub {
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.7);
+    }
+
+    .hero-badge {
+      width: 52px;
+      height: 52px;
+      background: rgba(255, 255, 255, 0.18);
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+    }
+
+    .section-title {
+      font-size: 17px;
+      font-weight: 800;
+      color: var(--text-primary);
+      margin-bottom: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .see-all-btn {
+      font-size: 13px;
+      color: var(--primary-accent);
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+    }
+
+    /* Stats Grid */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+
+    .stat-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      cursor: pointer;
+      transition: transform 0.15s, box-shadow 0.15s;
+    }
+
+    .stat-card:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+    }
+
+    .stat-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      margin-bottom: 10px;
+    }
+
+    .stat-number {
+      font-size: 26px;
+      font-weight: 800;
+      color: var(--text-primary);
+      line-height: 1;
+    }
+
+    .stat-label {
+      font-size: 12px;
+      color: var(--text-hint);
+      font-weight: 600;
+      margin-top: 4px;
+    }
+
+    /* ─── CLUBS LISTING & CHIPS ─── */
+    .search-box {
+      margin-bottom: 14px;
+    }
+
+    .search-input {
+      width: 100%;
+      padding: 12px 16px 12px 42px;
+      background: var(--surface) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' fill='%2394A3B8' viewBox='0 0 24 24'%3E%3Cpath d='M10 18a7.952 7.952 0 0 0 4.897-1.688l4.396 4.395 1.414-1.414-4.395-4.396A7.952 7.952 0 0 0 18 10c0-4.411-3.589-8-8-8s-8 3.589-8 8 3.589 8 8 8zm0-14c3.309 0 6 2.691 6 6s-2.691 6-6 6-6-2.691-6-6 2.691-6 6-6z'/%3E%3C/svg%3E") no-repeat 14px center;
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-md);
+      font-size: 14px;
+      outline: none;
+    }
+
+    .filter-chips {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding-bottom: 12px;
+      scrollbar-width: none;
+    }
+
+    .filter-chips::-webkit-scrollbar {
+      display: none;
+    }
+
+    .chip {
+      padding: 7px 14px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.2s;
+    }
+
+    .chip.active {
+      background: var(--primary);
+      border-color: var(--primary);
+      color: white;
+    }
+
+    /* Club Cards */
+    .club-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      margin-bottom: 12px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .club-card:hover {
+      box-shadow: var(--shadow-md);
+      border-color: #CBD5E1;
+    }
+
+    .club-card-header {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .club-emoji-box {
+      width: 50px;
+      height: 50px;
+      border-radius: 14px;
+      background: #EFF6FF;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 26px;
+      flex-shrink: 0;
+    }
+
+    .club-title-col {
+      flex: 1;
+    }
+
+    .club-card-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .club-meta-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 4px;
+    }
+
+    .category-tag {
+      font-size: 10px;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 5px;
+      text-transform: uppercase;
+    }
+
+    .club-desc-snippet {
+      font-size: 13px;
+      color: var(--text-secondary);
+      margin: 10px 0 12px;
+      line-height: 1.4;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .club-card-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-top: 1px solid #F1F5F9;
+      padding-top: 10px;
+      font-size: 12px;
+      color: var(--text-hint);
+    }
+
+    .joined-badge {
+      background: var(--success-light);
+      color: var(--success);
+      font-size: 10.5px;
+      font-weight: 800;
+      padding: 3px 8px;
+      border-radius: 6px;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    /* ─── EVENT CARDS ─── */
+    .event-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      margin-bottom: 12px;
+      cursor: pointer;
+      display: flex;
+      gap: 14px;
+      transition: all 0.2s;
+    }
+
+    .event-card:hover {
+      box-shadow: var(--shadow-md);
+      border-color: #CBD5E1;
+    }
+
+    .event-date-badge {
+      width: 52px;
+      height: 58px;
+      background: #EFF6FF;
+      border: 1px solid #DBEAFE;
+      border-radius: 12px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .date-month {
+      font-size: 10px;
+      font-weight: 800;
+      color: var(--primary-accent);
+      text-transform: uppercase;
+    }
+
+    .date-day {
+      font-size: 20px;
+      font-weight: 800;
+      color: var(--primary);
+      line-height: 1.1;
+    }
+
+    .event-info-col {
+      flex: 1;
+    }
+
+    .event-title {
+      font-size: 14.5px;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .event-club {
+      font-size: 12px;
+      color: var(--primary-accent);
+      font-weight: 600;
+      margin: 2px 0 6px;
+    }
+
+    .event-meta-line {
+      font-size: 12px;
+      color: var(--text-hint);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* ─── MODAL / DETAIL SCREENS ─── */
+    .detail-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: var(--background);
+      z-index: 30;
+      display: none;
+      flex-direction: column;
+      overflow-y: auto;
+    }
+
+    .detail-overlay.active {
+      display: flex;
+    }
+
+    .detail-hero {
+      padding: 40px 20px 24px;
+      color: white;
+      text-align: center;
+      position: relative;
+    }
+
+    .back-btn {
+      position: absolute;
+      top: 16px;
+      left: 16px;
+      background: rgba(255, 255, 255, 0.2);
+      border: none;
+      color: white;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      font-size: 18px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .detail-icon {
+      font-size: 54px;
+      margin-bottom: 10px;
+    }
+
+    .detail-title {
+      font-size: 22px;
+      font-weight: 800;
+      margin-bottom: 4px;
+    }
+
+    .detail-body {
+      padding: 22px 20px;
+      flex: 1;
+    }
+
+    .info-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      margin-bottom: 16px;
+    }
+
+    .info-row {
+      display: flex;
+      margin-bottom: 12px;
+      font-size: 13.5px;
+    }
+
+    .info-row:last-child {
+      margin-bottom: 0;
+    }
+
+    .info-label {
+      width: 105px;
+      color: var(--text-hint);
+      font-weight: 600;
+    }
+
+    .info-val {
+      flex: 1;
+      color: var(--text-primary);
+      font-weight: 600;
+    }
+
+    /* ─── CONFIRMATION PASS / TICKET ─── */
+    .ticket-card {
+      background: var(--surface);
+      border: 2px dashed #93C5FD;
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      text-align: center;
+      box-shadow: var(--shadow-md);
+      margin-bottom: 24px;
+      position: relative;
+    }
+
+    .ticket-stamp {
+      width: 68px;
+      height: 68px;
+      background: var(--success-light);
+      border-radius: 50%;
+      color: var(--success);
+      font-size: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 16px;
+    }
+
+    .ticket-title {
+      font-size: 20px;
+      font-weight: 800;
+      color: var(--text-primary);
+    }
+
+    .ticket-subtitle {
+      font-size: 13px;
+      color: var(--text-secondary);
+      margin: 4px 0 16px;
+    }
+
+    .ticket-divider {
+      border-top: 1.5px dashed var(--border);
+      margin: 16px 0;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 48px 20px;
+    }
+
+    .empty-icon {
+      font-size: 52px;
+      margin-bottom: 14px;
+      opacity: 0.6;
+    }
+
+    .empty-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 6px;
+    }
+
+    .empty-sub {
+      font-size: 13px;
+      color: var(--text-secondary);
+      line-height: 1.4;
+    }
+
+    /* Toast Notification */
+    .toast-msg {
+      position: absolute;
+      bottom: 80px;
+      left: 20px;
+      right: 20px;
+      background: #0F172A;
+      color: white;
+      padding: 12px 18px;
+      border-radius: var(--radius-md);
+      font-size: 13px;
+      font-weight: 600;
+      text-align: center;
+      box-shadow: var(--shadow-lg);
+      z-index: 100;
+      display: none;
+      animation: fadeIn 0.2s ease-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="app-viewport">
+
+    <!-- ─── SPLASH SCREEN ─── -->
+    <div id="screen-splash" class="screen active">
+      <div class="splash-logo">🎓</div>
+      <div class="splash-title">College Club<br>Management</div>
+      <div class="splash-subtitle">Manage Your Campus Life</div>
+      <div class="splash-loader"></div>
+      <div class="splash-footer">B.Tech Flutter Lab Project</div>
+    </div>
+
+    <!-- ─── LOGIN SCREEN ─── -->
+    <div id="screen-login" class="screen">
+      <div class="login-badge">🎓</div>
+      <div class="login-header">
+        <h2>Welcome Back</h2>
+        <p>Sign in to College Club Management</p>
+      </div>
+
+      <div class="demo-box">
+        <div class="demo-box-text">
+          <strong>Demo Credentials</strong><br>
+          Roll No: 24XZ1A1219 (or Email) • password123
+        </div>
+        <button class="demo-box-btn" onclick="fillDemoCredentials()">Use Demo</button>
+      </div>
+
+      <div id="login-error" class="login-error"></div>
+
+      <div class="form-group">
+        <label>Roll Number or Email</label>
+        <input type="text" id="login-email" class="form-control" placeholder="e.g. CS21B001 or student@college.edu">
+      </div>
+
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" id="login-password" class="form-control" placeholder="••••••••">
+      </div>
+
+      <button class="btn-primary" onclick="handleLogin()" style="margin-top: 10px;">Sign In</button>
+    </div>
+
+    <!-- ─── MAIN HOME SHELL ─── -->
+    <div id="screen-home" class="screen">
+      <!-- App Header -->
+      <div class="app-header">
+        <h1 id="header-title">Dashboard</h1>
+        <div class="avatar-btn" onclick="toggleDropdown()">
+          M
+          <div id="avatar-dropdown" class="avatar-dropdown">
+            <div class="dropdown-header">
+              <div class="dropdown-name" id="user-display-name">Mahesh</div>
+              <div class="dropdown-email" id="user-display-email">24XZ1A1219 • IT, 3rd Year</div>
+            </div>
+            <div class="dropdown-item" onclick="openAboutModal()">
+              <span>ℹ️</span> About Project
+            </div>
+            <div class="dropdown-item logout" onclick="handleLogout()">
+              <span>🚪</span> Logout
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab Content Area -->
+      <div class="content-body" id="tab-dashboard">
+        <!-- Hero Greeting -->
+        <div class="hero-banner">
+          <div>
+            <div class="hero-greeting" id="hero-greeting">Good Day,</div>
+            <div class="hero-name" id="hero-name">Mahesh</div>
+            <div class="hero-sub" id="hero-sub">24XZ1A1219 • IT, 3rd Year</div>
+          </div>
+          <div class="hero-badge">🎓</div>
+        </div>
+
+        <div class="section-title">Overview</div>
+        <div class="stats-grid">
+          <div class="stat-card" onclick="switchTab('clubs')">
+            <div class="stat-icon" style="background: #EFF6FF; color: var(--primary-accent);">👥</div>
+            <div class="stat-number" id="stat-total-clubs">8</div>
+            <div class="stat-label">Total Clubs</div>
+          </div>
+          <div class="stat-card" onclick="switchTab('my-clubs')">
+            <div class="stat-icon" style="background: #FEF3C7; color: var(--warning);">⭐</div>
+            <div class="stat-number" id="stat-my-clubs">0</div>
+            <div class="stat-label">My Clubs</div>
+          </div>
+          <div class="stat-card" onclick="switchTab('events')">
+            <div class="stat-icon" style="background: #CFFAFE; color: var(--cyan);">📅</div>
+            <div class="stat-number" id="stat-total-events">10</div>
+            <div class="stat-label">Total Events</div>
+          </div>
+          <div class="stat-card" onclick="switchTab('events')">
+            <div class="stat-icon" style="background: #DCFCE7; color: var(--success);">✅</div>
+            <div class="stat-number" id="stat-registered-events">0</div>
+            <div class="stat-label">Registered</div>
+          </div>
+        </div>
+
+        <div class="section-title">
+          <span>Upcoming Events</span>
+          <span class="see-all-btn" onclick="switchTab('events')">See all</span>
+        </div>
+        <div id="dashboard-upcoming-list"></div>
+      </div>
+
+      <!-- Tab: Clubs -->
+      <div class="content-body" id="tab-clubs" style="display: none;">
+        <div class="search-box">
+          <input type="text" id="club-search" class="search-input" placeholder="Search clubs..." oninput="renderClubs()">
+        </div>
+        <div class="filter-chips" id="club-category-chips"></div>
+        <div id="clubs-list"></div>
+      </div>
+
+      <!-- Tab: Events -->
+      <div class="content-body" id="tab-events" style="display: none;">
+        <div class="search-box">
+          <input type="text" id="event-search" class="search-input" placeholder="Search events..." oninput="renderEvents()">
+        </div>
+        <div class="filter-chips">
+          <div class="chip active" id="chip-evt-upcoming" onclick="setEventFilter('upcoming')">Upcoming</div>
+          <div class="chip" id="chip-evt-all" onclick="setEventFilter('all')">All Events</div>
+        </div>
+        <div id="events-list"></div>
+      </div>
+
+      <!-- Tab: My Clubs -->
+      <div class="content-body" id="tab-my-clubs" style="display: none;">
+        <div id="my-clubs-list"></div>
+      </div>
+
+      <!-- Bottom Nav Bar -->
+      <div class="app-bottom-nav">
+        <div class="nav-item active" id="nav-dashboard" onclick="switchTab('dashboard')">
+          <span class="nav-icon">🏠</span>
+          <span>Home</span>
+        </div>
+        <div class="nav-item" id="nav-clubs" onclick="switchTab('clubs')">
+          <span class="nav-icon">👥</span>
+          <span>Clubs</span>
+        </div>
+        <div class="nav-item" id="nav-events" onclick="switchTab('events')">
+          <span class="nav-icon">📅</span>
+          <span>Events</span>
+        </div>
+        <div class="nav-item" id="nav-my-clubs" onclick="switchTab('my-clubs')">
+          <span class="nav-icon">⭐</span>
+          <span>My Clubs</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ─── DETAIL OVERLAY: CLUB DETAILS ─── -->
+    <div id="overlay-club-detail" class="detail-overlay">
+      <div class="detail-hero" id="club-detail-hero" style="background: linear-gradient(135deg, #1E3A8A, #2563EB);">
+        <button class="back-btn" onclick="closeClubDetail()">←</button>
+        <div class="detail-icon" id="cd-icon">⚡</div>
+        <div class="detail-title" id="cd-name">IEEE Student Branch</div>
+        <span class="category-tag" id="cd-category" style="background: rgba(255,255,255,0.25); color: white;">TECHNICAL</span>
+      </div>
+      <div class="detail-body">
+        <div id="cd-action-box" style="margin-bottom: 20px;"></div>
+
+        <div class="section-title">About Club</div>
+        <p id="cd-desc" style="font-size: 14px; color: var(--text-secondary); line-height: 1.5; margin-bottom: 18px;"></p>
+
+        <div class="section-title">Information</div>
+        <div class="info-card">
+          <div class="info-row">
+            <div class="info-label">Coordinator</div>
+            <div class="info-val" id="cd-coordinator">Dr. Ramesh Kumar</div>
+          </div>
+          <div class="info-row">
+            <div class="info-label">Schedule</div>
+            <div class="info-val" id="cd-schedule">Every Saturday • 10:00 AM</div>
+          </div>
+          <div class="info-row">
+            <div class="info-label">Location</div>
+            <div class="info-val" id="cd-location">CS Seminar Hall</div>
+          </div>
+          <div class="info-row">
+            <div class="info-label">Members</div>
+            <div class="info-val" id="cd-members">78 students</div>
+          </div>
+        </div>
+
+        <div class="section-title">Club Events</div>
+        <div id="cd-events-list"></div>
+      </div>
+    </div>
+
+    <!-- ─── DETAIL OVERLAY: EVENT DETAILS ─── -->
+    <div id="overlay-event-detail" class="detail-overlay">
+      <div class="detail-hero" id="event-detail-hero" style="background: linear-gradient(135deg, #0891B2, #0284C7);">
+        <button class="back-btn" onclick="closeEventDetail()">←</button>
+        <div class="detail-icon">📅</div>
+        <div class="detail-title" id="ed-title">National Hackathon 2026</div>
+        <div id="ed-club" style="font-size: 14px; opacity: 0.9;">IEEE Student Branch</div>
+      </div>
+      <div class="detail-body">
+        <!-- Normal view -->
+        <div id="ed-normal-view">
+          <div id="ed-action-box" style="margin-bottom: 20px;"></div>
+
+          <div class="section-title">Event Information</div>
+          <div class="info-card">
+            <div class="info-row">
+              <div class="info-label">Date</div>
+              <div class="info-val" id="ed-date">Oct 15, 2026</div>
+            </div>
+            <div class="info-row">
+              <div class="info-label">Time</div>
+              <div class="info-val" id="ed-time">9:00 AM</div>
+            </div>
+            <div class="info-row">
+              <div class="info-label">Venue</div>
+              <div class="info-val" id="ed-venue">Main Seminar Hall</div>
+            </div>
+            <div class="info-row">
+              <div class="info-label">Category</div>
+              <div class="info-val" id="ed-category">Technical</div>
+            </div>
+          </div>
+
+          <div class="section-title">About Event</div>
+          <p id="ed-desc" style="font-size: 14px; color: var(--text-secondary); line-height: 1.5;"></p>
+        </div>
+
+        <!-- Confirmation Ticket view (after registering) -->
+        <div id="ed-ticket-view" style="display: none;">
+          <div class="ticket-card">
+            <div class="ticket-stamp">✓</div>
+            <div class="ticket-title">Registration Confirmed!</div>
+            <div class="ticket-subtitle">You are successfully registered for this event.</div>
+
+            <div class="ticket-divider"></div>
+
+            <div style="text-align: left; font-size: 13.5px;">
+              <div class="info-row"><div class="info-label">Event</div><div class="info-val" id="ticket-event-name">Hackathon</div></div>
+              <div class="info-row"><div class="info-label">Attendee</div><div class="info-val" id="ticket-attendee">Alex Johnson</div></div>
+              <div class="info-row"><div class="info-label">Date & Time</div><div class="info-val" id="ticket-date-time">Oct 15, 9:00 AM</div></div>
+              <div class="info-row"><div class="info-label">Venue</div><div class="info-val" id="ticket-venue">Main Hall</div></div>
+            </div>
+          </div>
+          <button class="btn-primary" onclick="closeEventDetail()">Back to Events</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ─── ABOUT MODAL ─── -->
+    <div id="overlay-about" class="detail-overlay">
+      <div class="detail-hero" style="background: linear-gradient(135deg, #1E3A8A, #2563EB);">
+        <button class="back-btn" onclick="closeAboutModal()">←</button>
+        <div class="detail-icon">🎓</div>
+        <div class="detail-title">College Club Management</div>
+        <div style="font-size: 13px; opacity: 0.85;">B.Tech Flutter Laboratory Project</div>
+      </div>
+      <div class="detail-body">
+        <div class="section-title">Built With</div>
+        <div class="info-card">
+          <div class="info-row"><div class="info-label">Framework</div><div class="info-val">Flutter 3.47.6</div></div>
+          <div class="info-row"><div class="info-label">Language</div><div class="info-val">Dart 3.13.5</div></div>
+          <div class="info-row"><div class="info-label">Persistence</div><div class="info-val">SharedPreferences / LocalStorage</div></div>
+          <div class="info-row"><div class="info-label">State Handling</div><div class="info-val">StatefulWidget / setState</div></div>
+        </div>
+
+        <div class="section-title">Viva Concepts Demonstrated</div>
+        <div class="info-card">
+          <div style="font-size: 13px; line-height: 1.8; color: var(--text-secondary);">
+            ✓ <strong>Navigation & Routing:</strong> PageRouteBuilder, BottomNavigationBar<br>
+            ✓ <strong>Data Modeling:</strong> Club & Event Dart Classes<br>
+            ✓ <strong>State Handling:</strong> Dynamic Counters & Reactive UI<br>
+            ✓ <strong>Validation:</strong> Input checking & duplicate join prevention<br>
+            ✓ <strong>Local Persistence:</strong> SharedPreferences session management
+          </div>
+        </div>
+        <button class="btn-primary" onclick="closeAboutModal()">Close</button>
+      </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast-msg"></div>
+
+  </div>
+
+  <script>
+    // ─── MASTER DATA ───
+    const CLUBS = [
+      { id: 'club_001', name: 'Coding Club', category: 'Technical', description: 'The Coding Club is dedicated to building strong problem-solving skills, competitive programming, software development, hackathons, and placement preparation for technical interviews.', coordinator: 'Dr. Anita Singh (Dept of IT)', schedule: 'Every Tue & Thu • 4:30 PM', location: 'Advanced IT Lab, Block B', members: 95, emoji: '💻', color: '#2563EB' },
+      { id: 'club_002', name: 'Cultural Club', category: 'Cultural', description: 'The Cultural Club celebrates artistic talent, stage presence, drama, classical performances, and organizes the prestigious annual inter-collegiate cultural fest.', coordinator: 'Prof. Meera Nair', schedule: 'Every Wednesday • 4:00 PM', location: 'Main Campus Auditorium', members: 74, emoji: '🎭', color: '#9333EA' },
+      { id: 'club_003', name: 'Sports Club', category: 'Sports', description: 'The Sports Club promotes fitness, teamwork, and athletic excellence across cricket, football, basketball, badminton, and track events with regular training and tournaments.', coordinator: 'Mr. Suresh Patel', schedule: 'Mon, Wed, Fri • 6:30 AM', location: 'College Sports Ground & Arena', members: 120, emoji: '⚽', color: '#EA580C' },
+      { id: 'club_004', name: 'Photography Club', category: 'Photography', description: 'The Photography Club captures unforgettable campus memories, teaches visual composition, DSLR camera handling, digital editing, photowalks, and annual photo exhibitions.', coordinator: 'Prof. K. Venkatesh', schedule: 'Every Saturday • 10:00 AM', location: 'Media Studio & Campus Grounds', members: 48, emoji: '📸', color: '#0D9488' },
+      { id: 'club_005', name: 'Music Club', category: 'Music', description: 'The Music Club is the rhythm of campus life, featuring instrumentalists, vocalists, acoustic jam sessions, open mics, and band performances at major college functions.', coordinator: 'Mr. Rajiv Sharma', schedule: 'Every Friday • 5:00 PM', location: 'Music & Arts Hall, Ground Floor', members: 52, emoji: '🎵', color: '#DB2777' }
+    ];
+
+    const EVENTS = [
+      { id: 'evt_001', title: 'National Hackathon 2026', clubId: 'club_001', clubName: 'Coding Club', date: '2026-10-15', dateFormatted: 'Oct 15, 2026', time: '9:00 AM', location: 'Advanced IT Lab, Block B', category: 'Technical', description: '24-hour hackathon building solutions for real-world problems. All branches welcome. Cash prizes worth ₹50,000!', upcoming: true },
+      { id: 'evt_002', title: 'Annual Cultural Fest — Rang', clubId: 'club_002', clubName: 'Cultural Club', date: '2026-10-22', dateFormatted: 'Oct 22, 2026', time: '5:00 PM', location: 'Main Campus Auditorium', category: 'Cultural', description: 'The biggest cultural extravaganza of the semester featuring drama, fashion shows, classical dance, and musical acts.', upcoming: true },
+      { id: 'evt_003', title: 'Inter-College Cricket Cup', clubId: 'club_003', clubName: 'Sports Club', date: '2026-11-01', dateFormatted: 'Nov 01, 2026', time: '7:00 AM', location: 'College Sports Ground', category: 'Sports', description: '16 college teams competing over 3 days in a thrilling knockout cricket tournament. Open spectator entry.', upcoming: true },
+      { id: 'evt_004', title: 'Competitive Coding Sprint', clubId: 'club_001', clubName: 'Coding Club', date: '2026-10-18', dateFormatted: 'Oct 18, 2026', time: '10:00 AM', location: 'Advanced IT Lab, Block B', category: 'Technical', description: '3-hour competitive programming challenge covering dynamic programming, graph algorithms, and data structures.', upcoming: true },
+      { id: 'evt_005', title: 'Campus Photowalk & Exhibition', clubId: 'club_004', clubName: 'Photography Club', date: '2026-10-25', dateFormatted: 'Oct 25, 2026', time: '8:00 AM', location: 'Campus Grounds & Media Studio', category: 'Photography', description: 'Morning photowalk around campus followed by a photo editing session and indoor exhibition in the Media Studio.', upcoming: true },
+      { id: 'evt_006', title: 'Acoustic Open Mic Night', clubId: 'club_005', clubName: 'Music Club', date: '2026-11-05', dateFormatted: 'Nov 05, 2026', time: '6:00 PM', location: 'Amphitheatre', category: 'Music', description: 'Unplugged guitar, vocal, and piano performances under the stars. Open to all students who wish to perform.', upcoming: true },
+      { id: 'evt_007', title: 'Flutter App Dev Workshop', clubId: 'club_001', clubName: 'Coding Club', date: '2026-11-08', dateFormatted: 'Nov 08, 2026', time: '11:00 AM', location: 'Advanced IT Lab, Block B', category: 'Technical', description: 'Hands-on beginner workshop building mobile apps using Flutter & Dart. Bring your own laptop!', upcoming: true },
+      { id: 'evt_008', title: 'Drama Night — One-Act Plays', clubId: 'club_002', clubName: 'Cultural Club', date: '2026-11-12', dateFormatted: 'Nov 12, 2026', time: '6:30 PM', location: 'Main Campus Auditorium', category: 'Cultural', description: 'Intense one-act play performances by student drama teams. Inter-department competition with audience voting.', upcoming: true },
+      { id: 'evt_009', title: 'DSLR Photography Masterclass', clubId: 'club_004', clubName: 'Photography Club', date: '2026-11-15', dateFormatted: 'Nov 15, 2026', time: '10:00 AM', location: 'Media Studio', category: 'Photography', description: 'Expert-led session on camera settings, composition rules, and Lightroom post-processing for beginners.', upcoming: true },
+      { id: 'evt_010', title: 'Annual Sports Day', clubId: 'club_003', clubName: 'Sports Club', date: '2026-11-20', dateFormatted: 'Nov 20, 2026', time: '8:00 AM', location: 'College Sports Ground & Arena', category: 'Sports', description: 'Full-day sports event with track races, team sports, tug-of-war, and prize distribution ceremony.', upcoming: true }
+    ];
+
+    // ─── STATE MANAGEMENT ───
+    let currentTab = 'dashboard';
+    let selectedClubCategory = 'All';
+    let eventFilter = 'upcoming'; // 'upcoming' or 'all'
+    let currentClubId = null;
+    let currentEventId = null;
+
+    function getJoinedClubs() {
+      try {
+        return JSON.parse(localStorage.getItem('college_clubs_joined') || '[]');
+      } catch { return []; }
+    }
+
+    function setJoinedClubs(arr) {
+      localStorage.setItem('college_clubs_joined', JSON.stringify(arr));
+      updateDynamicCounters();
+    }
+
+    function getRegisteredEvents() {
+      try {
+        return JSON.parse(localStorage.getItem('college_events_registered') || '[]');
+      } catch { return []; }
+    }
+
+    function setRegisteredEvents(arr) {
+      localStorage.setItem('college_events_registered', JSON.stringify(arr));
+      updateDynamicCounters();
+    }
+
+    function isLoggedIn() {
+      return localStorage.getItem('college_logged_in') === 'true';
+    }
+
+    // ─── INIT & SPLASH ───
+    window.addEventListener('DOMContentLoaded', () => {
+      // 2 second splash animation
+      setTimeout(() => {
+        document.getElementById('screen-splash').classList.remove('active');
+        if (isLoggedIn()) {
+          showHomeScreen();
+        } else {
+          document.getElementById('screen-login').classList.add('active');
+        }
+      }, 1800);
+    });
+
+    // ─── AUTHENTICATION ───
+    function fillDemoCredentials() {
+      document.getElementById('login-email').value = '24XZ1A1219';
+      document.getElementById('login-password').value = 'password123';
+      document.getElementById('login-error').style.display = 'none';
+    }
+
+    function handleLogin() {
+      const input = document.getElementById('login-email').value.trim();
+      const pwd = document.getElementById('login-password').value;
+      const errBox = document.getElementById('login-error');
+
+      if (!input || !pwd) {
+        errBox.textContent = 'Please enter your Roll Number / Email and password.';
+        errBox.style.display = 'block';
+        return;
+      }
+
+      const matchEmail = input.toLowerCase() === 'mahesh@college.edu';
+      const matchRoll = input.toUpperCase() === '24XZ1A1219';
+
+      if ((matchEmail || matchRoll) && pwd === 'password123') {
+        localStorage.setItem('college_logged_in', 'true');
+        localStorage.setItem('college_user_name', 'Mahesh');
+        localStorage.setItem('college_user_roll', '24XZ1A1219');
+        localStorage.setItem('college_user_email', 'mahesh@college.edu');
+        showToast('Login successful! Welcome, Mahesh 🎓');
+        document.getElementById('screen-login').classList.remove('active');
+        showHomeScreen();
+      } else {
+        errBox.textContent = 'Invalid credentials. Use Roll No: 24XZ1A1219 (or mahesh@college.edu) and password: password123';
+        errBox.style.display = 'block';
+      }
+    }
+
+    function handleLogout() {
+      if (confirm('Are you sure you want to log out?')) {
+        localStorage.removeItem('college_logged_in');
+        document.getElementById('avatar-dropdown').classList.remove('show');
+        document.getElementById('screen-home').classList.remove('active');
+        document.getElementById('screen-login').classList.add('active');
+        showToast('You have logged out.');
+      }
+    }
+
+    function showHomeScreen() {
+      document.getElementById('screen-home').classList.add('active');
+      const hour = new Date().getHours();
+      let greeting = 'Good Morning,';
+      if (hour >= 12 && hour < 17) greeting = 'Good Afternoon,';
+      else if (hour >= 17) greeting = 'Good Evening,';
+
+      // Update profile in header dropdown
+      const name = localStorage.getItem('college_user_name') || 'Mahesh';
+      const roll = localStorage.getItem('college_user_roll') || '24XZ1A1219';
+      document.getElementById('user-display-name').textContent = name;
+      document.getElementById('user-display-email').textContent = roll + ' • IT, 3rd Year';
+
+      // Update hero banner
+      document.getElementById('hero-greeting').textContent = greeting;
+      document.getElementById('hero-name').textContent = name;
+      document.getElementById('hero-sub').textContent = roll + ' • IT, 3rd Year';
+
+      updateDynamicCounters();
+      renderDashboardUpcoming();
+      renderClubCategoryChips();
+      renderClubs();
+      renderEvents();
+      renderMyClubs();
+    }
+
+    // ─── DYNAMIC STATISTICS ───
+    function updateDynamicCounters() {
+      const joined = getJoinedClubs();
+      const registered = getRegisteredEvents();
+      document.getElementById('stat-total-clubs').textContent = CLUBS.length;
+      document.getElementById('stat-my-clubs').textContent = joined.length;
+      document.getElementById('stat-total-events').textContent = EVENTS.length;
+      document.getElementById('stat-registered-events').textContent = registered.length;
+    }
+
+    // ─── NAVIGATION ───
+    function switchTab(tab) {
+      currentTab = tab;
+      ['dashboard', 'clubs', 'events', 'my-clubs'].forEach(t => {
+        document.getElementById(`tab-${t}`).style.display = (t === tab) ? 'block' : 'none';
+        document.getElementById(`nav-${t}`).classList.toggle('active', t === tab);
+      });
+
+      const titles = {
+        'dashboard': 'Dashboard',
+        'clubs': 'Explore Clubs',
+        'events': 'Events & Workshops',
+        'my-clubs': 'My Joined Clubs'
+      };
+      document.getElementById('header-title').textContent = titles[tab];
+
+      if (tab === 'dashboard') {
+        updateDynamicCounters();
+        renderDashboardUpcoming();
+      } else if (tab === 'clubs') {
+        renderClubs();
+      } else if (tab === 'events') {
+        renderEvents();
+      } else if (tab === 'my-clubs') {
+        renderMyClubs();
+      }
+    }
+
+    function toggleDropdown() {
+      document.getElementById('avatar-dropdown').classList.toggle('show');
+    }
+
+    document.addEventListener('click', (e) => {
+      const btn = document.querySelector('.avatar-btn');
+      if (btn && !btn.contains(e.target)) {
+        document.getElementById('avatar-dropdown').classList.remove('show');
+      }
+    });
+
+    // ─── DASHBOARD UPCOMING ───
+    function renderDashboardUpcoming() {
+      const list = document.getElementById('dashboard-upcoming-list');
+      const registered = getRegisteredEvents();
+      const top3 = EVENTS.slice(0, 3);
+
+      list.innerHTML = top3.map(evt => {
+        const isReg = registered.includes(evt.id);
+        const parts = evt.dateFormatted.split(' ');
+        return `
+          <div class="event-card" onclick="openEventDetail('${evt.id}')">
+            <div class="event-date-badge">
+              <span class="date-month">${parts[0]}</span>
+              <span class="date-day">${parts[1].replace(',', '')}</span>
+            </div>
+            <div class="event-info-col">
+              <div class="event-title">${evt.title}</div>
+              <div class="event-club">${evt.clubName}</div>
+              <div class="event-meta-line">
+                <span>⏰ ${evt.time}</span>
+                <span>•</span>
+                <span>📍 ${evt.location}</span>
+                ${isReg ? '<span class="joined-badge" style="margin-left: auto;">REGISTERED</span>' : ''}
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // ─── CLUBS LISTING ───
+    const CATEGORIES = ['All', 'Technical', 'Cultural', 'Sports', 'Photography', 'Music'];
+
+    function renderClubCategoryChips() {
+      const container = document.getElementById('club-category-chips');
+      container.innerHTML = CATEGORIES.map(cat => `
+        <div class="chip ${selectedClubCategory === cat ? 'active' : ''}" onclick="setClubCategory('${cat}')">${cat}</div>
+      `).join('');
+    }
+
+    function setClubCategory(cat) {
+      selectedClubCategory = cat;
+      renderClubCategoryChips();
+      renderClubs();
+    }
+
+    function renderClubs() {
+      const query = (document.getElementById('club-search').value || '').toLowerCase().trim();
+      const joined = getJoinedClubs();
+      const list = document.getElementById('clubs-list');
+
+      let filtered = CLUBS.filter(c => {
+        const matchCat = (selectedClubCategory === 'All') || (c.category === selectedClubCategory);
+        const matchQuery = !query || c.name.toLowerCase().includes(query) || c.category.toLowerCase().includes(query);
+        return matchCat && matchQuery;
+      });
+
+      if (filtered.length === 0) {
+        list.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-icon">🔍</div>
+            <div class="empty-title">No clubs found</div>
+            <div class="empty-sub">Try searching for a different keyword or category.</div>
+          </div>
+        `;
+        return;
+      }
+
+      list.innerHTML = filtered.map(c => {
+        const isJoined = joined.includes(c.id);
+        return `
+          <div class="club-card" onclick="openClubDetail('${c.id}')">
+            <div class="club-card-header">
+              <div class="club-emoji-box">${c.emoji}</div>
+              <div class="club-title-col">
+                <div class="club-card-title">${c.name}</div>
+                <div class="club-meta-row">
+                  <span class="category-tag" style="background: #EFF6FF; color: var(--primary);">${c.category}</span>
+                  <span style="font-size: 11.5px; color: var(--text-hint);">${c.members} members</span>
+                </div>
+              </div>
+              ${isJoined ? '<span class="joined-badge">JOINED</span>' : ''}
+            </div>
+            <div class="club-desc-snippet">${c.description}</div>
+            <div class="club-card-footer">
+              <span>📅 ${c.schedule}</span>
+              <span style="color: var(--primary-accent); font-weight: 600;">View Details →</span>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // ─── CLUB DETAILS & MEMBERSHIP ───
+    function openClubDetail(clubId) {
+      currentClubId = clubId;
+      const club = CLUBS.find(c => c.id === clubId);
+      if (!club) return;
+
+      document.getElementById('cd-icon').textContent = club.emoji;
+      document.getElementById('cd-name').textContent = club.name;
+      document.getElementById('cd-category').textContent = club.category.toUpperCase();
+      document.getElementById('cd-desc').textContent = club.description;
+      document.getElementById('cd-coordinator').textContent = club.coordinator;
+      document.getElementById('cd-schedule').textContent = club.schedule;
+      document.getElementById('cd-location').textContent = club.location;
+      document.getElementById('cd-members').textContent = `${club.members} students`;
+
+      updateClubActionBox();
+
+      // Related events for this club
+      const relEvents = EVENTS.filter(e => e.clubId === club.id);
+      const evList = document.getElementById('cd-events-list');
+      if (relEvents.length === 0) {
+        evList.innerHTML = '<div style="font-size: 13px; color: var(--text-hint);">No upcoming events for this club.</div>';
+      } else {
+        evList.innerHTML = relEvents.map(e => `
+          <div class="event-card" onclick="openEventDetail('${e.id}')" style="margin-bottom: 8px;">
+            <div class="event-info-col">
+              <div class="event-title" style="font-size: 13.5px;">${e.title}</div>
+              <div class="event-meta-line" style="margin-top: 3px;">
+                <span>📅 ${e.dateFormatted}</span> • <span>⏰ ${e.time}</span>
+              </div>
+            </div>
+          </div>
+        `).join('');
+      }
+
+      document.getElementById('overlay-club-detail').classList.add('active');
+    }
+
+    function closeClubDetail() {
+      document.getElementById('overlay-club-detail').classList.remove('active');
+      renderClubs();
+      renderMyClubs();
+    }
+
+    function updateClubActionBox() {
+      const box = document.getElementById('cd-action-box');
+      const joined = getJoinedClubs();
+      const isJoined = joined.includes(currentClubId);
+
+      if (isJoined) {
+        box.innerHTML = `
+          <div style="background: var(--success-light); border: 1px solid #86EFAC; color: var(--success); padding: 14px; border-radius: var(--radius-md); text-align: center; font-weight: 700; font-size: 14px; margin-bottom: 8px;">
+            ✓ JOINED — You are a member
+          </div>
+          <button style="width: 100%; padding: 10px; background: transparent; border: none; color: var(--error); font-weight: 600; font-size: 13px; cursor: pointer;" onclick="leaveClub('${currentClubId}')">
+            Leave Club
+          </button>
+        `;
+      } else {
+        box.innerHTML = `
+          <button class="btn-primary" onclick="joinClub('${currentClubId}')">+ Join This Club</button>
+        `;
+      }
+    }
+
+    function joinClub(clubId) {
+      let joined = getJoinedClubs();
+      if (!joined.includes(clubId)) {
+        joined.push(clubId);
+        setJoinedClubs(joined);
+        const club = CLUBS.find(c => c.id === clubId);
+        if (club) club.members++;
+        document.getElementById('cd-members').textContent = `${club.members} students`;
+        updateClubActionBox();
+        showToast(`You have joined ${club.name}! 🎉`);
+      }
+    }
+
+    function leaveClub(clubId) {
+      const club = CLUBS.find(c => c.id === clubId);
+      if (confirm(`Are you sure you want to leave ${club.name}?`)) {
+        let joined = getJoinedClubs();
+        joined = joined.filter(id => id !== clubId);
+        setJoinedClubs(joined);
+        if (club && club.members > 0) club.members--;
+        document.getElementById('cd-members').textContent = `${club.members} students`;
+        updateClubActionBox();
+        showToast(`You left ${club.name}.`);
+      }
+    }
+
+    // ─── EVENTS LISTING ───
+    function setEventFilter(filter) {
+      eventFilter = filter;
+      document.getElementById('chip-evt-upcoming').classList.toggle('active', filter === 'upcoming');
+      document.getElementById('chip-evt-all').classList.toggle('active', filter === 'all');
+      renderEvents();
+    }
+
+    function renderEvents() {
+      const query = (document.getElementById('event-search').value || '').toLowerCase().trim();
+      const registered = getRegisteredEvents();
+      const list = document.getElementById('events-list');
+
+      let filtered = EVENTS.filter(e => {
+        const matchFilter = (eventFilter === 'all') || e.upcoming;
+        const matchQuery = !query || e.title.toLowerCase().includes(query) || e.clubName.toLowerCase().includes(query);
+        return matchFilter && matchQuery;
+      });
+
+      if (filtered.length === 0) {
+        list.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-icon">📅</div>
+            <div class="empty-title">No events found</div>
+            <div class="empty-sub">Try searching for another keyword.</div>
+          </div>
+        `;
+        return;
+      }
+
+      list.innerHTML = filtered.map(evt => {
+        const isReg = registered.includes(evt.id);
+        const parts = evt.dateFormatted.split(' ');
+        return `
+          <div class="event-card" onclick="openEventDetail('${evt.id}')">
+            <div class="event-date-badge">
+              <span class="date-month">${parts[0]}</span>
+              <span class="date-day">${parts[1].replace(',', '')}</span>
+            </div>
+            <div class="event-info-col">
+              <div class="event-title">${evt.title}</div>
+              <div class="event-club">${evt.clubName}</div>
+              <div class="event-meta-line">
+                <span>⏰ ${evt.time}</span>
+                <span>•</span>
+                <span>📍 ${evt.location}</span>
+                ${isReg ? '<span class="joined-badge" style="margin-left: auto;">REGISTERED</span>' : ''}
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // ─── EVENT DETAILS & CONFIRMATION PASS ───
+    function openEventDetail(eventId) {
+      currentEventId = eventId;
+      const evt = EVENTS.find(e => e.id === eventId);
+      if (!evt) return;
+
+      document.getElementById('ed-title').textContent = evt.title;
+      document.getElementById('ed-club').textContent = evt.clubName;
+      document.getElementById('ed-date').textContent = evt.dateFormatted;
+      document.getElementById('ed-time').textContent = evt.time;
+      document.getElementById('ed-venue').textContent = evt.location;
+      document.getElementById('ed-category').textContent = evt.category;
+      document.getElementById('ed-desc').textContent = evt.description;
+
+      const registered = getRegisteredEvents();
+      const isReg = registered.includes(eventId);
+
+      document.getElementById('ed-normal-view').style.display = 'block';
+      document.getElementById('ed-ticket-view').style.display = 'none';
+
+      const box = document.getElementById('ed-action-box');
+      if (isReg) {
+        box.innerHTML = `
+          <div style="background: var(--success-light); border: 1px solid #86EFAC; color: var(--success); padding: 14px; border-radius: var(--radius-md); text-align: center; font-weight: 700; font-size: 14px;">
+            ✓ REGISTERED — Pass Confirmed
+          </div>
+        `;
+      } else {
+        box.innerHTML = `
+          <button class="btn-primary" onclick="confirmRegisterEvent('${evt.id}')">Register for Event</button>
+        `;
+      }
+
+      document.getElementById('overlay-event-detail').classList.add('active');
+    }
+
+    function closeEventDetail() {
+      document.getElementById('overlay-event-detail').classList.remove('active');
+      renderEvents();
+      renderDashboardUpcoming();
+    }
+
+    function confirmRegisterEvent(eventId) {
+      const evt = EVENTS.find(e => e.id === eventId);
+      if (confirm(`Confirm your registration for:\n"${evt.title}"?`)) {
+        let registered = getRegisteredEvents();
+        if (!registered.includes(eventId)) {
+          registered.push(eventId);
+          setRegisteredEvents(registered);
+        }
+
+        // Display Confirmation Ticket View
+        document.getElementById('ticket-event-name').textContent = evt.title;
+        const attendeeName = localStorage.getItem('college_user_name') || 'Mahesh';
+        const attendeeRoll = localStorage.getItem('college_user_roll') || '24XZ1A1219';
+        document.getElementById('ticket-attendee').textContent = attendeeName + ' (' + attendeeRoll + ')';
+        document.getElementById('ticket-date-time').textContent = `${evt.dateFormatted} • ${evt.time}`;
+        document.getElementById('ticket-venue').textContent = evt.location;
+
+        document.getElementById('ed-normal-view').style.display = 'none';
+        document.getElementById('ed-ticket-view').style.display = 'block';
+
+        showToast('Registration Confirmed! 🎉');
+      }
+    }
+
+    // ─── MY CLUBS TAB ───
+    function renderMyClubs() {
+      const joined = getJoinedClubs();
+      const list = document.getElementById('my-clubs-list');
+
+      if (joined.length === 0) {
+        list.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-icon">👥</div>
+            <div class="empty-title">You haven't joined any clubs yet</div>
+            <div class="empty-sub">Explore clubs on campus and join ones that match your passions!</div>
+            <button class="btn-primary" style="margin-top: 18px; max-width: 200px;" onclick="switchTab('clubs')">Browse Clubs</button>
+          </div>
+        `;
+        return;
+      }
+
+      const myClubsData = CLUBS.filter(c => joined.includes(c.id));
+      list.innerHTML = myClubsData.map(c => `
+        <div class="club-card" onclick="openClubDetail('${c.id}')">
+          <div class="club-card-header">
+            <div class="club-emoji-box">${c.emoji}</div>
+            <div class="club-title-col">
+              <div class="club-card-title">${c.name}</div>
+              <div class="club-meta-row">
+                <span class="category-tag" style="background: #EFF6FF; color: var(--primary);">${c.category}</span>
+                <span style="font-size: 11.5px; color: var(--text-hint);">${c.members} members</span>
+              </div>
+            </div>
+            <span class="joined-badge">JOINED</span>
+          </div>
+          <div class="club-card-footer" style="margin-top: 10px;">
+            <span>📅 ${c.schedule}</span>
+            <span style="color: var(--primary-accent); font-weight: 600;">View →</span>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    // ─── ABOUT MODAL ───
+    function openAboutModal() {
+      document.getElementById('avatar-dropdown').classList.remove('show');
+      document.getElementById('overlay-about').classList.add('active');
+    }
+
+    function closeAboutModal() {
+      document.getElementById('overlay-about').classList.remove('active');
+    }
+
+    // ─── TOAST NOTIFICATION ───
+    function showToast(msg) {
+      const toast = document.getElementById('toast');
+      toast.textContent = msg;
+      toast.style.display = 'block';
+      setTimeout(() => {
+        toast.style.display = 'none';
+      }, 2500);
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,11 @@
+{
+  "name": "College Club Management",
+  "short_name": "CollegeClub",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#0175C2",
+  "theme_color": "#0175C2",
+  "description": "College Club Management - Flutter Lab Project",
+  "orientation": "portrait-primary",
+  "prefer_related_applications": false
+}
